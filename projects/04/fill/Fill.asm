@@ -13,7 +13,8 @@
 
 // Put your code here.
 
-@6912
+(LOOP)
+@8191 // number of screen address blocks
 M=A
 @SCREEN
 D=A
@@ -31,13 +32,13 @@ A=M
 M=-1
 @address
 M=M+1
-@6912
+A=M
+M=-1
+@8191
 MD=M-1
 @END
 D;JEQ
-@address
-D=M
-@LOOP
+@FILL
 0;JMP
 (UNFILL)
 @address
@@ -45,17 +46,17 @@ A=M
 M=0
 @address
 M=M+1
-@6912
+@8191
 MD=M-1
 @END
-D;JEQ
-@address
+D;JLT
+@UNFILL
 D=M
-@LOOP
 0;JMP
 
+
 (END)
-@END
+@LOOP
 0;JMP
 
 
