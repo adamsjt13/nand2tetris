@@ -40,4 +40,52 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+
+    // A or C instruction
+    Mux16(a=instruction,b=aluOut,sel=instruction[15],out=outMuxA);
+
+    // A register
+    Not(in=instruction[15],out=notI);
+    Or(a=notI,b=instruction[5],out=loadA);
+    ARegister(in=outMuxA,load=loadA,out=A,out[0..14]=addressM);
+
+    // A or inM
+    And(a=instruction[15],b=instruction[12],out=AinM);
+    Mux16(a=A,b=inM,sel=AinM,out=aluIn);
+
+    // D register
+    And(a=instruction[15],b=instruction[4],out=loadD);
+    DRegister(in=aluOut,load=loadD,out=D);
+
+    // ALU
+    ALU(x=D,
+        y=aluIn,
+        zx=instruction[11],
+        nx=instruction[10],
+        zy=instruction[9],
+        ny=instruction[8],
+        f=instruction[7],
+        no=instruction[6],
+        out=aluOut,
+        out=outM,
+        zr=zr,
+        ng=ng);
+
+    // Jump logic
+    Not(in=zr,out=nzr);
+    Not(in=ng,out=pos);
+    And(a=instruction[2],b=ng,out=negjump);
+    And(a=instruction[1],b=zr,out=zerojump);
+    And(a=instruction[0],b=pos,out=posjump);
+    Or(a=negjump,b=zerojump,out=negzerojump);
+    Or(a=negzerojump,b=posjump,out=anyjump);
+
+    And(a=instruction[15],b=anyjump,out=jump);
+
+    // PC
+    PC(in=A,load=jump,inc=true,reset=reset,out[0..14]=pc);
+
+    // write M
+    And(a=instruction[15],b=instruction[3],out=writeM);
+
 }
