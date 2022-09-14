@@ -47,15 +47,17 @@ class Parser:
         return self._current_line
 
     def dest(self):
-        return self._current_line[0]
+        equal_index = self._current_line.find('=')
+        if equal_index != -1:
+            return self._current_line[0]
     
     def comp(self):
         equal_index = self._current_line.find('=')
         colon_index = self._current_line.find(';')
 
-        if colon_index != -1 and equal_index != -1:
+        if colon_index != -1:
             return self._current_line[(equal_index+1):colon_index]
-        elif equal_index != -1:
+        else:
             return self._current_line[(equal_index+1):len(self._current_line)]
 
     def jump(self):
