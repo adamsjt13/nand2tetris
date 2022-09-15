@@ -49,7 +49,7 @@ class Parser:
     def dest(self):
         equal_index = self._current_line.find('=')
         if equal_index != -1:
-            return self._current_line[0]
+            return self._current_line[0:equal_index]
     
     def comp(self):
         equal_index = self._current_line.find('=')

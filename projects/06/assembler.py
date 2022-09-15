@@ -1,26 +1,35 @@
-import parser
-import code
+from parser import Parser
+from code import Code
 
 def main(args):
-    file_parser = parser.Parser(args)
-    code_builder = code.Code()
-    keep_going = True
-    
-    while keep_going:
 
-        file_parser.advance()
+    parser = Parser(args)
+    code = Code()
 
-        instruction = file_parser.instructionType()
+    output_file_name = args.replace('asm','hack')
+    output_file = open(output_file_name, 'w')
 
-        print('Instruction: ', instruction)
-        if instruction == 'A_INSTRUCTION' or instruction == 'L_INSTRUCTION':
-            print('Symbol: ', file_parser.symbol())
+    convert_to_binary = lambda x, n: format(int(x), 'b').zfill(n)
+
+    print('file: ', output_file)
+    while parser.hasMoreLines():
+
+        parser.advance()
+
+        if (parser.instructionType() == 'A_INSTRUCTION' 
+            or parser.instructionType() == 'L_INSTRUCTION'):
+            symbol = parser.symbol()
+            symbol = convert_to_binary(symbol, 16)
+            symbol = symbol + '\n'
+            output_file.write(symbol)
         else:
-            print('Dest: ', file_parser.dest(), ' binary: ', code_builder.dest(file_parser.dest()))
-            print('Comp: ', file_parser.comp(), ' binary: ', code_builder.comp(file_parser.comp()))
-            print('Jump: ', file_parser.jump(), ' binary: ', code_builder.jump(file_parser.jump()))
-        print('')
-        keep_going = file_parser.hasMoreLines()
+            comp = code.comp(parser.comp())
+            dest = code.dest(parser.dest())
+            jump = code.jump(parser.jump())
+            output = ''.join(['111',comp,dest,jump,'\n'])
+            output_file.write(output)
+    
+    output_file.close()
 
 if __name__ == "__main__":
     import sys
