@@ -27,12 +27,11 @@ class Parser:
     def advance(self):
         self._current_line_number += 1
         self.cleanLine()
-        if self.isBlankLine():
-            self.advance()
         
-    
     def instructionType(self):
-        if self._current_line[0] == '@':
+        if self.isBlankLine():
+            return None
+        elif self._current_line[0] == '@':
             return 'A_INSTRUCTION'
         elif '=' in self._current_line or ';' in self._current_line:
             return 'C_INSTRUCTION'
